@@ -10,6 +10,8 @@ import (
 	"testing"
 	"time"
 
+	config "github.com/T-Prohmpossadhorn/go-core-config"
+	"github.com/T-Prohmpossadhorn/go-core-logger"
 	"github.com/stretchr/testify/assert"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/baggage"
@@ -148,8 +150,7 @@ func TestOTel(t *testing.T) {
 		}
 		assert.True(t, found, "success log should be present")
 
-		tracer := GetTracer("test-otel")
-		ctx, span := tracer.Start(context.Background(), "test-span")
+		ctx, span := StartSpan(context.Background(), "test-otel", "test-span")
 		defer span.End()
 
 		err = logger.InfoContext(ctx, "Test OTEL integration",
@@ -215,8 +216,7 @@ func TestOTel(t *testing.T) {
 		tracerProvider = nil
 		otelMu.Unlock()
 
-		tracer := GetTracer("test-otel")
-		ctx, span := tracer.Start(context.Background(), "test-span")
+		ctx, span := StartSpan(context.Background(), "test-otel", "test-span")
 		defer span.End()
 
 		err := logger.InfoContext(ctx, "Test noop tracer",
@@ -312,8 +312,7 @@ func TestOTel(t *testing.T) {
 		}
 		assert.True(t, found, "success log should be present")
 
-		tracer := GetTracer("test-otel")
-		ctx, span := tracer.Start(context.Background(), "test-span")
+		ctx, span := StartSpan(context.Background(), "test-otel", "test-span")
 		defer span.End()
 
 		err = logger.InfoContext(ctx, "Test custom config",
@@ -760,8 +759,7 @@ func TestOTel(t *testing.T) {
 				wg.Add(1)
 				go func(i int) {
 					defer wg.Done()
-					tracer := GetTracer("test-tracer-" + string(rune(i)))
-					ctx, span := tracer.Start(context.Background(), "test-span")
+					ctx, span := StartSpan(context.Background(), "test-tracer-"+string(rune(i)), "test-span")
 					if !span.SpanContext().IsValid() && tracerProvider != nil {
 						t.Errorf("concurrent GetTracer returned invalid span for tracer %d; tracerProvider: %v", i, tracerProvider)
 					}

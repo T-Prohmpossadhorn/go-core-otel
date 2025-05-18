@@ -17,7 +17,7 @@ The `otel` package is a lightweight, thread-safe OpenTelemetry setup for distrib
 
 ## Features
 - **OpenTelemetry Tracing**: Initializes a `TracerProvider` with an OTLP gRPC exporter for production or a mock exporter for testing.
-- **Span Management**: Provides `GetTracer` for creating named tracers and spans.
+- **Span Management**: Offers `GetTracer` and `StartSpan` for easily creating tracers and spans.
 - **Thread-Safety**: Uses `sync.RWMutex` for safe concurrent access to the `TracerProvider`.
 - **Integration**: Leverages `config` for settings and `logger` for trace-aware logging (`trace_id`, `span_id`).
 - **Propagation**: Supports W3C Trace Context and Baggage for distributed tracing.
@@ -37,8 +37,8 @@ go get github.com/T-Prohmpossadhorn/go-core/otel
 - `go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc@v1.29.0`
 - `go.opentelemetry.io/otel/exporters/stdout/stdouttrace@v1.29.0`
 - `go.opentelemetry.io/otel/sdk/trace@v1.29.0`
-- `github.com/T-Prohmpossadhorn/go-core/config`
-- `github.com/T-Prohmpossadhorn/go-core/logger`
+- `github.com/T-Prohmpossadhorn/go-core-config`
+- `github.com/T-Prohmpossadhorn/go-core-logger`
 - `github.com/spf13/viper@v1.18.2`
 
 Add to `go.mod`:
@@ -48,8 +48,8 @@ go get go.opentelemetry.io/otel@v1.29.0
 go get go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc@v1.29.0
 go get go.opentelemetry.io/otel/exporters/stdout/stdouttrace@v1.29.0
 go get go.opentelemetry.io/otel/sdk/trace@v1.29.0
-go get github.com/T-Prohmpossadhorn/go-core/config
-go get github.com/T-Prohmpossadhorn/go-core/logger
+go get github.com/T-Prohmpossadhorn/go-core-config
+go get github.com/T-Prohmpossadhorn/go-core-logger
 go get github.com/spf13/viper@v1.18.2
 ```
 
@@ -71,7 +71,7 @@ package main
 
 import (
     "context"
-    "github.com/T-Prohmpossadhorn/go-core/config"
+    config "github.com/T-Prohmpossadhorn/go-core-config"
     "github.com/T-Prohmpossadhorn/go-core/otel"
 )
 
@@ -89,8 +89,7 @@ func main() {
     defer otel.Shutdown(context.Background())
 
     // Create a tracer and start a span
-    tracer := otel.GetTracer("example-service")
-    ctx, span := tracer.Start(context.Background(), "process-request")
+    ctx, span := otel.StartSpan(context.Background(), "example-service", "process-request")
     defer span.End()
 
     // Simulate work
@@ -108,8 +107,8 @@ package main
 
 import (
     "context"
-    "github.com/T-Prohmpossadhorn/go-core/config"
-    "github.com/T-Prohmpossadhorn/go-core/logger"
+    config "github.com/T-Prohmpossadhorn/go-core-config"
+    "github.com/T-Prohmpossadhorn/go-core-logger/logger"
     "github.com/T-Prohmpossadhorn/go-core/otel"
 )
 
@@ -136,9 +135,8 @@ func main() {
     }
     defer otel.Shutdown(context.Background())
 
-    // Create a tracer and start a span
-    tracer := otel.GetTracer("user-service")
-    ctx, span := tracer.Start(context.Background(), "handle-user-request")
+    // Create a span without fetching a tracer
+    ctx, span := otel.StartSpan(context.Background(), "user-service", "handle-user-request")
     defer span.End()
 
     // Log with trace context
@@ -164,8 +162,8 @@ package main
 
 import (
     "context"
-    "github.com/T-Prohmpossadhorn/go-core/config"
-    "github.com/T-Prohmpossadhorn/go-core/logger"
+    config "github.com/T-Prohmpossadhorn/go-core-config"
+    "github.com/T-Prohmpossadhorn/go-core-logger/logger"
     "github.com/T-Prohmpossadhorn/go-core/otel"
     "go.opentelemetry.io/otel/baggage"
     "go.opentelemetry.io/otel/propagation"
@@ -198,9 +196,8 @@ func main() {
     }
     defer otel.Shutdown(context.Background())
 
-    // Create a tracer and start a span
-    tracer := otel.GetTracer("order-service")
-    ctx, span := tracer.Start(context.Background(), "process-order")
+    // Create a span for order processing
+    ctx, span := otel.StartSpan(context.Background(), "order-service", "process-order")
     defer span.End()
 
     // Add baggage
@@ -219,8 +216,7 @@ func main() {
 
     // Simulate downstream service call with extracted context
     downstreamCtx := otel.GetTextMapPropagator().Extract(context.Background(), propagation.MapCarrier(carrier))
-    downstreamTracer := otel.GetTracer("payment-service")
-    downstreamCtx, downstreamSpan := downstreamTracer.Start(downstreamCtx, "process-payment")
+    downstreamCtx, downstreamSpan := otel.StartSpan(downstreamCtx, "payment-service", "process-payment")
     defer downstreamSpan.End()
 
     logger.InfoContext(downstreamCtx, "Processing payment",

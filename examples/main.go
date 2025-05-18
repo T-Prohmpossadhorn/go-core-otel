@@ -2,6 +2,10 @@ package main
 
 import (
 	"context"
+
+	config "github.com/T-Prohmpossadhorn/go-core-config"
+	"github.com/T-Prohmpossadhorn/go-core-logger"
+	"github.com/T-Prohmpossadhorn/go-core-otel"
 )
 
 func main() {
@@ -23,9 +27,8 @@ func main() {
 	}
 	defer otel.Shutdown(context.Background())
 
-	// Create tracer and span
-	tracer := otel.GetTracer("example")
-	ctx, span := tracer.Start(context.Background(), "example-span")
+	// Create span without fetching tracer
+	ctx, span := otel.StartSpan(context.Background(), "example", "example-span")
 	defer span.End()
 
 	// Log with span context
