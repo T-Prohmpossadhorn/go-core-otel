@@ -2,10 +2,6 @@ package main
 
 import (
 	"context"
-
-	"github.com/T-Prohmpossadhorn/go-core/config"
-	"github.com/T-Prohmpossadhorn/go-core/logger"
-	"github.com/T-Prohmpossadhorn/go-core/otel"
 )
 
 func main() {

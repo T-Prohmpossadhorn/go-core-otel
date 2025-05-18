@@ -9,8 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/T-Prohmpossadhorn/go-core/config"
-	"github.com/T-Prohmpossadhorn/go-core/logger"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"

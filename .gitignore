@@ -1,0 +1,42 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Dependency directories (vendored dependencies)
+vendor/
+
+# Go workspace file
+go.work
+
+# Editor and IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# macOS system files
+.DS_Store
+
+# Build output directories
+/bin/
+/pkg/
+
+# Local environment configuration files
+.env
+*.local
+
+# Log files
+*.log
+
+# Coverage reports
+coverage.txt
