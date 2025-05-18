@@ -9,6 +9,9 @@ import (
 	"sync"
 	"time"
 
+	config "github.com/T-Prohmpossadhorn/go-core-config"
+	"github.com/T-Prohmpossadhorn/go-core-logger"
+
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
@@ -177,4 +180,11 @@ func GetTracer(name string) oteltrace.Tracer {
 	}
 	logger.Debug("Returning tracer", logger.String("name", name), logger.Any("tracerProvider", tracerProvider))
 	return tracerProvider.Tracer(name)
+}
+
+// StartSpan starts a span with the given tracer name and span name without the
+// caller needing to fetch the tracer first.
+func StartSpan(ctx context.Context, tracerName, spanName string, opts ...oteltrace.SpanStartOption) (context.Context, oteltrace.Span) {
+	tracer := GetTracer(tracerName)
+	return tracer.Start(ctx, spanName, opts...)
 }

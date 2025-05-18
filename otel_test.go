@@ -10,6 +10,8 @@ import (
 	"testing"
 	"time"
 
+	config "github.com/T-Prohmpossadhorn/go-core-config"
+	logger "github.com/T-Prohmpossadhorn/go-core-logger"
 	"github.com/stretchr/testify/assert"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/baggage"
